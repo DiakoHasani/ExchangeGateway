@@ -13,7 +13,6 @@ namespace EG.Business.Services
         public BitcoinBusiness(IBitcoinRepository bitcoinRepository)
         {
             _bitcoinRepository = bitcoinRepository;
-
         }
     }
     public interface IBitcoinBusiness
