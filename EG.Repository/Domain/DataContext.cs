@@ -9,6 +9,10 @@ namespace EG.Repository.Domain
 {
     public class DataContext : DbContext
     {
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        {
+
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TblWebhookRequest>().HasOne(a => a.TblBitcoin).WithMany(b => b.TblWebhookRequests).OnDelete(DeleteBehavior.NoAction);
@@ -18,10 +22,10 @@ namespace EG.Repository.Domain
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("data source=.;initial catalog=ExchangeGatewayDb;integrated security=true;MultipleActiveResultSets=True;");
-            }
+            //if (!optionsBuilder.IsConfigured)
+            //{
+            //    optionsBuilder.UseSqlServer("data source=.;initial catalog=ExchangeGatewayDb;integrated security=true;MultipleActiveResultSets=True;");
+            //}
         }
 
         public virtual DbSet<TblError> TblErrors { get; set; }
@@ -30,5 +34,7 @@ namespace EG.Repository.Domain
         public virtual DbSet<TblWallet> TblWallets { get; set; }
         public virtual DbSet<TblSellRequest> TblSellRequests { get; set; }
         public virtual DbSet<TblWebhookRequest> TblWebhookRequests { get; set; }
+        public virtual DbSet<TblVinBitcoin> TblVinBitcoins { get; set; }
+        public virtual DbSet<TblVoutBitcoin> TblVoutBitcoins { get; set; }
     }
 }

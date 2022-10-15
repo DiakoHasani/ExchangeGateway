@@ -27,6 +27,23 @@ namespace EG.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TblVoutBitcoins",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ScriptPubKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ScriptPubKeyAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    BitcoinId = table.Column<int>(type: "int", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TblVoutBitcoins", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TblWallets",
                 columns: table => new
                 {
@@ -53,10 +70,6 @@ namespace EG.Repository.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TransactionId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    VinTransactionId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    VinValue = table.Column<double>(type: "float", nullable: false),
-                    VoutReciverValue = table.Column<double>(type: "float", nullable: false),
-                    VoutNetworkValue = table.Column<double>(type: "float", nullable: false),
                     Fee = table.Column<double>(type: "float", nullable: false),
                     Confirmed = table.Column<bool>(type: "bit", nullable: false),
                     WalletId = table.Column<int>(type: "int", nullable: false),
@@ -131,6 +144,55 @@ namespace EG.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TblBitcoinTblVoutBitcoin",
+                columns: table => new
+                {
+                    BitcoinId = table.Column<int>(type: "int", nullable: false),
+                    TblBitcoinsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TblBitcoinTblVoutBitcoin", x => new { x.BitcoinId, x.TblBitcoinsId });
+                    table.ForeignKey(
+                        name: "FK_TblBitcoinTblVoutBitcoin_TblBitcoins_TblBitcoinsId",
+                        column: x => x.TblBitcoinsId,
+                        principalTable: "TblBitcoins",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TblBitcoinTblVoutBitcoin_TblVoutBitcoins_BitcoinId",
+                        column: x => x.BitcoinId,
+                        principalTable: "TblVoutBitcoins",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TblVinBitcoins",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ScriptPubkey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ScriptPubKeyAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    IsCoinbase = table.Column<bool>(type: "bit", nullable: false),
+                    BitcoinId = table.Column<int>(type: "int", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TblVinBitcoins", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TblVinBitcoins_TblBitcoins_BitcoinId",
+                        column: x => x.BitcoinId,
+                        principalTable: "TblBitcoins",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TblWebhookRequests",
                 columns: table => new
                 {
@@ -165,6 +227,11 @@ namespace EG.Repository.Migrations
                 column: "WalletId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TblBitcoinTblVoutBitcoin_TblBitcoinsId",
+                table: "TblBitcoinTblVoutBitcoin",
+                column: "TblBitcoinsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TblSellRequests_WalletId",
                 table: "TblSellRequests",
                 column: "WalletId");
@@ -173,6 +240,11 @@ namespace EG.Repository.Migrations
                 name: "IX_TblTrons_WalletId",
                 table: "TblTrons",
                 column: "WalletId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TblVinBitcoins_BitcoinId",
+                table: "TblVinBitcoins",
+                column: "BitcoinId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TblWebhookRequests_BitcoinId",
@@ -188,13 +260,22 @@ namespace EG.Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "TblBitcoinTblVoutBitcoin");
+
+            migrationBuilder.DropTable(
                 name: "TblErrors");
 
             migrationBuilder.DropTable(
                 name: "TblSellRequests");
 
             migrationBuilder.DropTable(
+                name: "TblVinBitcoins");
+
+            migrationBuilder.DropTable(
                 name: "TblWebhookRequests");
+
+            migrationBuilder.DropTable(
+                name: "TblVoutBitcoins");
 
             migrationBuilder.DropTable(
                 name: "TblBitcoins");

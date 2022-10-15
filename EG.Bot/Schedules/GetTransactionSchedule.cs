@@ -18,20 +18,23 @@ namespace EG.Bot.Schedules
         private readonly ITronBusiness _tronBusiness;
         private readonly IWalletBusiness _walletBusiness;
         private readonly IWebhookRequestBusiness _webhookRequestBusiness;
+        private readonly IBitcoinBusiness _bitcoinBusiness;
 
         private bool pause = false;
         private List<WalletModel> wallets;
-        MessageModel resultCallTronScan, resultCallWebhook;
+        MessageModel resultCallTronScan, resultCallBtcScan, resultCallWebhook;
 
         public GetTransactionSchedule(IErrorBusiness errorBusiness,
             ITronBusiness tronBusiness,
             IWalletBusiness walletBusiness,
-            IWebhookRequestBusiness webhookRequestBusiness)
+            IWebhookRequestBusiness webhookRequestBusiness,
+            IBitcoinBusiness bitcoinBusiness)
         {
             _errorBusiness = errorBusiness;
             _tronBusiness = tronBusiness;
             _walletBusiness = walletBusiness;
             _webhookRequestBusiness = webhookRequestBusiness;
+            _bitcoinBusiness = bitcoinBusiness;
         }
 
         public void ShowMessage(string message)
@@ -52,13 +55,14 @@ namespace EG.Bot.Schedules
                 {
                     try
                     {
-                        Console.Clear();
                         pause = true;
 
+                        ShowMessage("start get Wallets in database");
                         wallets = _walletBusiness.GetWallets();
 
                         #region Call Tron
 
+                        ShowMessage("start call TronScan");
                         foreach (var wallet in wallets.Where(a => a.CoinType == CoinTypeEnum.Tron))
                         {
                             resultCallTronScan = await _tronBusiness.CallTronScan(wallet);
@@ -67,10 +71,22 @@ namespace EG.Bot.Schedules
 
                         #endregion
 
+                        #region Call Bitcoin
+
+                        ShowMessage("start call BtcScan");
+                        foreach (var wallet in wallets.Where(a => a.CoinType == CoinTypeEnum.BitCoin))
+                        {
+                            resultCallBtcScan = await _bitcoinBusiness.CallBtcScan(wallet);
+                            ShowMessage(resultCallBtcScan.Messages);
+                        }
+                        #endregion
+
                         #region Call Webhook
+                        ShowMessage("start call webhook");
                         resultCallWebhook = await _webhookRequestBusiness.CallWebhook();
                         ShowMessage(resultCallWebhook.Messages);
                         #endregion
+
                     }
                     catch (Exception ex)
                     {
@@ -79,6 +95,8 @@ namespace EG.Bot.Schedules
                     }
                     finally
                     {
+                        ShowMessage("---------------------------------------------------------");
+                        Thread.Sleep(60000);
                         pause = false;
                     }
                 }

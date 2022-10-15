@@ -164,7 +164,7 @@ namespace EG.Business.Services
                 else
                 {
                     transfers = resultLastTransfer.Response.Select((item, index) => new TokenTransferIndexModel { Item = item, Index = index }).ToList();
-                    var transferIndex = 20;
+                    var transferIndex = transfers.Count;
 
                     if (transfers.Any(a => a.Item.TransactionId == model.Last_Txid))
                     {

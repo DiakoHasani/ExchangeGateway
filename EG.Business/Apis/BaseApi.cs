@@ -10,6 +10,7 @@ namespace EG.Business.Apis
     public abstract class BaseApi
     {
         protected const string TronScanUrl = "https://apilist.tronscan.org/";
+        protected const string BtcScanUrl = "https://btcscan.org/api/address/";
 
         protected async Task<HttpResponseMessage> Post(string url, Dictionary<string, string> parameters)
         {

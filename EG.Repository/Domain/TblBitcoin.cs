@@ -13,12 +13,6 @@ namespace EG.Repository.Domain
         [MaxLength(length: 200)]
         public string TransactionId { get; set; }
 
-        [MaxLength(length: 200)]
-        public string VinTransactionId { get; set; }
-
-        public double VinValue { get; set; }
-        public double VoutReciverValue { get; set; }
-        public double VoutNetworkValue { get; set; }
         public double Fee { get; set; }
         public bool Confirmed { get; set; }
         public int WalletId { get; set; }
@@ -26,5 +20,7 @@ namespace EG.Repository.Domain
         [ForeignKey(nameof(WalletId))]
         public virtual TblWallet Wallet { get; set; }
         public virtual ICollection<TblWebhookRequest> TblWebhookRequests { get; set; }
+        public virtual ICollection<TblVinBitcoin> TblVinBitcoins { get; set; }
+        public virtual ICollection<TblVoutBitcoin> TblVoutBitcoins { get; set; }
     }
 }

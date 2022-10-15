@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EG.Model.DTO.Bitcoin;
 using EG.Model.DTO.Tron;
 using EG.Model.DTO.TronScan;
 using EG.Model.DTO.Wallet;
@@ -28,6 +29,13 @@ namespace EG.Business.AutoMapper
             CreateMap<TblTron, TokenTransferModel>();
             CreateMap<TblTron, TronModel>();
             CreateMap<TronModel, TblTron>();
+
+            CreateMap<BitcoinModel, TblBitcoin>();
+            CreateMap<TblBitcoin, BitcoinModel>();
+            CreateMap<VinBitcoinModel, TblVinBitcoin>();
+            CreateMap<TblVinBitcoin, VinBitcoinModel>();
+            CreateMap<TblVoutBitcoin, VoutBitcoinModel>();
+            CreateMap<VoutBitcoinModel, TblVoutBitcoin>();
         }
     }
 }

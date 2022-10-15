@@ -1,4 +1,5 @@
-﻿using EG.Model.DTO.Tron;
+﻿using EG.Model.DTO.Bitcoin;
+using EG.Model.DTO.Tron;
 using EG.Model.DTO.TronScan;
 using EG.Model.General;
 using Newtonsoft.Json;
@@ -12,6 +13,38 @@ namespace EG.Business.Apis
 {
     public class WebhookApi : BaseApi, IWebhookApi
     {
+        public async Task<ApiResultModel<string>> CallBitcoin(string url, BitcoinModel model)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(model);
+                var body = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var result = await Post(url, body);
+
+                if (result == null)
+                {
+                    return new ApiResultModel<string> { Messages = new List<string> { " result in WebhookApi.CallBitcoin is null" } };
+                }
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    return new ApiResultModel<string> { Messages = new List<string> { await result.Content.ReadAsStringAsync() } };
+                }
+
+                return new ApiResultModel<string>
+                {
+                    Messages = new List<string> { "success call webhook api bitcoin" },
+                    Result = true,
+                    Response = JsonConvert.DeserializeObject<string>(await result.Content.ReadAsStringAsync())
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResultModel<string> { Messages = new List<string> { ex.Message } };
+            }
+        }
+
         public async Task<ApiResultModel<string>> CallTron(string url, TronModel model)
         {
             try
@@ -50,5 +83,6 @@ namespace EG.Business.Apis
     public interface IWebhookApi
     {
         Task<ApiResultModel<string>> CallTron(string url, TronModel model);
+        Task<ApiResultModel<string>> CallBitcoin(string url, BitcoinModel model);
     }
 }

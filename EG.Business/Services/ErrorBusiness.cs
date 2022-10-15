@@ -28,7 +28,7 @@ namespace EG.Business.Services
                 });
                 _errorRepository.SaveChange();
             }
-            catch(Exception)
+            catch (Exception)
             {
 
             }
@@ -47,15 +47,34 @@ namespace EG.Business.Services
                 });
                 _errorRepository.SaveChange();
             }
-            catch(Exception)
+            catch (Exception)
             {
 
             }
+        }
+
+        public void AddError(List<string> messages, string address)
+        {
+            try
+            {
+                var message = "";
+                messages.ForEach(a => message += $"{a} . ");
+                _errorRepository.Add(new Repository.Domain.TblError
+                {
+                    InnerException = "",
+                    Message = message,
+                    StackTrace = "",
+                    Address = address
+                });
+                _errorRepository.SaveChange();
+            }
+            catch (Exception) { }
         }
     }
     public interface IErrorBusiness
     {
         void AddError(Exception ex, string address);
         void AddError(string message, string address);
+        void AddError(List<string> messages, string address);
     }
 }

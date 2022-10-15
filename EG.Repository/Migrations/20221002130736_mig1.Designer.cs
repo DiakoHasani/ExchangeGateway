@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EG.Repository.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220920050433_mig1")]
+    [Migration("20221002130736_mig1")]
     partial class mig1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,19 +44,6 @@ namespace EG.Repository.Migrations
                     b.Property<string>("TransactionId")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("VinTransactionId")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<double>("VinValue")
-                        .HasColumnType("float");
-
-                    b.Property<double>("VoutNetworkValue")
-                        .HasColumnType("float");
-
-                    b.Property<double>("VoutReciverValue")
-                        .HasColumnType("float");
 
                     b.Property<int>("WalletId")
                         .HasColumnType("int");
@@ -198,6 +185,71 @@ namespace EG.Repository.Migrations
                     b.ToTable("TblTrons");
                 });
 
+            modelBuilder.Entity("EG.Repository.Domain.TblVinBitcoin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("BitcoinId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCoinbase")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ScriptPubKeyAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScriptPubkey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BitcoinId");
+
+                    b.ToTable("TblVinBitcoins");
+                });
+
+            modelBuilder.Entity("EG.Repository.Domain.TblVoutBitcoin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("BitcoinId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ScriptPubKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScriptPubKeyAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TblVoutBitcoins");
+                });
+
             modelBuilder.Entity("EG.Repository.Domain.TblWallet", b =>
                 {
                     b.Property<int>("Id")
@@ -276,6 +328,21 @@ namespace EG.Repository.Migrations
                     b.ToTable("TblWebhookRequests");
                 });
 
+            modelBuilder.Entity("TblBitcoinTblVoutBitcoin", b =>
+                {
+                    b.Property<int>("BitcoinId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TblBitcoinsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BitcoinId", "TblBitcoinsId");
+
+                    b.HasIndex("TblBitcoinsId");
+
+                    b.ToTable("TblBitcoinTblVoutBitcoin");
+                });
+
             modelBuilder.Entity("EG.Repository.Domain.TblBitcoin", b =>
                 {
                     b.HasOne("EG.Repository.Domain.TblWallet", "Wallet")
@@ -309,6 +376,17 @@ namespace EG.Repository.Migrations
                     b.Navigation("TblWallet");
                 });
 
+            modelBuilder.Entity("EG.Repository.Domain.TblVinBitcoin", b =>
+                {
+                    b.HasOne("EG.Repository.Domain.TblBitcoin", "TblBitcoin")
+                        .WithMany("TblVinBitcoins")
+                        .HasForeignKey("BitcoinId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TblBitcoin");
+                });
+
             modelBuilder.Entity("EG.Repository.Domain.TblWebhookRequest", b =>
                 {
                     b.HasOne("EG.Repository.Domain.TblBitcoin", "TblBitcoin")
@@ -326,8 +404,25 @@ namespace EG.Repository.Migrations
                     b.Navigation("TblTron");
                 });
 
+            modelBuilder.Entity("TblBitcoinTblVoutBitcoin", b =>
+                {
+                    b.HasOne("EG.Repository.Domain.TblVoutBitcoin", null)
+                        .WithMany()
+                        .HasForeignKey("BitcoinId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EG.Repository.Domain.TblBitcoin", null)
+                        .WithMany()
+                        .HasForeignKey("TblBitcoinsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EG.Repository.Domain.TblBitcoin", b =>
                 {
+                    b.Navigation("TblVinBitcoins");
+
                     b.Navigation("TblWebhookRequests");
                 });
 

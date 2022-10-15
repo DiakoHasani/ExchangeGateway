@@ -28,12 +28,15 @@ namespace EG.Config
             services.AddScoped<IWebhookRequestRepository, WebhookRequestRepository>();
             services.AddScoped<ITronRepository, TronRepository>();
             services.AddScoped<IBitcoinRepository, BitcoinRepository>();
+            services.AddScoped<IVinBitcoinRepository, VinBitcoinRepository>();
+            services.AddScoped<IVoutBitcoinRepository, VoutBitcoinRepository>();
         }
 
         private void SetApi(IServiceCollection services)
         {
             services.AddScoped<ITronScanApi, TronScanApi>();
             services.AddScoped<IWebhookApi, WebhookApi>();
+            services.AddScoped<IBitcoinApi, BitcoinApi>();
         }
 
         private void SetBusiness(IServiceCollection services)
@@ -43,6 +46,8 @@ namespace EG.Config
             services.AddScoped<ITronBusiness, TronBusiness>();
             services.AddScoped<IWebhookRequestBusiness, WebhookRequestBusiness>();
             services.AddScoped<IBitcoinBusiness, BitcoinBusiness>();
+            services.AddScoped<IVinBitcoinBusiness, VinBitcoinBusiness>();
+            services.AddScoped<IVoutBitcoinBusiness, VoutBitcoinBusiness>();
         }
     }
 }
